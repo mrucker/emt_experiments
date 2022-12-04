@@ -1,0 +1,10 @@
+name: emt_experiments
+dependencies:
+    - python
+    - pip
+    - pip:
+        - sklearn
+        - pandas
+        - matplotlib
+        - vowpalwabbit==9.6.*
+        - coba==6.*
