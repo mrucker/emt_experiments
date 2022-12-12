@@ -29,7 +29,7 @@ class EMT:
         self._args = (split, scorer, router, bound, min, interactions, rng)
 
         vw_args = [
-            "--eigen_memory_tree",
+            "--emt",
             f"--emt_tree {bound}",
             f"--emt_leaf {split}",
             f"--emt_scorer {scorer}",

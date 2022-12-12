@@ -3,7 +3,7 @@ from learners import EMT, CMT, EpisodicLearner, StackedLearner
 import coba as cb
 import coba.experiments as cbe
 
-n_shuffle = 50
+n_shuffle = 50 # for faster results reduce this to 1
 config    = {"processes": 2}
 epsilon   = 0.1
 
@@ -38,5 +38,5 @@ if __name__ == '__main__':
    # order for plotting. This has no effect on the actual results of the experiments.
    environments = sorted(environments, key=lambda e: (e.params['shuffle'],e.params['openml_task']))
 
-   result = cb.Experiment(environments, learners, description, environment_task=cbe.ClassEnvironmentInfo()).config(**config).evaluate(log)
+   result = cb.Experiment(environments, learners, description=description, environment_task=cbe.ClassEnvironmentInfo()).config(**config).evaluate(log)
    result.filter_fin().plot_learners()

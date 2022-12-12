@@ -25,5 +25,5 @@ if __name__ == '__main__':
     #order for processing. This has no effect on the actual results of the experiments.
     environments = sorted(environments, key=lambda e: (e.params['shuffle'],e.params['openml_task']))
 
-    result = cb.Experiment(environments, learners, description).config(**config).evaluate(log)
+    result = cb.Experiment(environments, learners, description=description).config(**config).evaluate(log)
     result.filter_fin().plot_learners(y='reward')
