@@ -1,4 +1,4 @@
-#Eigen Memory Trees
+# Eigen Memory Trees
 
 Eigen memory trees (EMT) [[1](https://arxiv.org/abs/2210.14077)] are iterative memory models that learn using both supervised and unsupervised information.
 
