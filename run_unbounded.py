@@ -4,33 +4,35 @@ import coba as cb
 import coba.experiments as cbe
 
 n_shuffle = 50 # for faster results reduce this to 1
-config    = {"processes": 2}
+config    = {"processes": 8}
 epsilon   = 0.1
 
 if __name__ == '__main__':
+
+   #all of the below hyperparameters were tuned for optimal performance
 
    learners = [
       # #Parametric
       cb.VowpalEpsilonLearner(epsilon, features=["a","xa","xxa"]),
 
       # #EMT-CB (self-consistent)
-      EpisodicLearner        (epsilon, EMT(split=100, scorer=3, router=2, bound=0,                         interactions=["xa"])),
+      EpisodicLearner        (epsilon, EMT(split=100, scorer="self_consistent_rank"    , router="eigen"  , interactions=["xa"])),
 
       #EMT-CB (not self-consistent)
-      EpisodicLearner        (epsilon, EMT(split=50, scorer=4, router=2, bound=-1,                         interactions=[])),
+      EpisodicLearner        (epsilon, EMT(split=50 , scorer="not_self_consistent_rank", router="eigen"  , interactions=[])),
 
       #CMT-CB
-      EpisodicLearner        (epsilon, CMT(n_nodes=2000, leaf_multiplier=9 , dream_repeats=10, alpha=0.50, interactions=['xa'])),
+      EpisodicLearner        (epsilon, CMT(n_nodes=2000, leaf_multiplier=9, dream_repeats=10, alpha=0.50 , interactions=['xa'])),
 
       #PEMT-CB
-      StackedLearner         (epsilon, EMT(split=100, scorer=3, router=2, bound=-1,                        interactions=['xa']), "xxa", False, True),
+      StackedLearner         (epsilon, EMT(split=100, scorer="self_consistent_rank"    , router="eigen"  , interactions=['xa']), "xxa", False, True),
 
       #PCMT-CB
-      StackedLearner         (epsilon, CMT(n_nodes=2000, leaf_multiplier=9, dream_repeats=10, alpha=0.50,  interactions=['xa']), "xxa", False, True),
+      StackedLearner         (epsilon, CMT(n_nodes=2000, leaf_multiplier=9, dream_repeats=10, alpha=0.50 ,  interactions=['xa']), "xxa", False, True),
    ]
 
    description = "Experiments with bounded memory on EMT."
-   log         = "./outcomes/unbounded.log.gz"
+   log         = "./outcomes/bounded.log.gz"
 
    environments = cb.Environments.cache_dir('.coba_cache').from_template("./experiments/unbounded.json", n_shuffle=n_shuffle)
 
@@ -38,5 +40,7 @@ if __name__ == '__main__':
    # order for plotting. This has no effect on the actual results of the experiments.
    environments = sorted(environments, key=lambda e: (e.params['shuffle'],e.params['openml_task']))
 
+   print(sorted(environments, key=lambda e: (e.params['shuffle'],e.params['openml_task']))[145].params)
+
    result = cb.Experiment(environments, learners, description=description, environment_task=cbe.ClassEnvironmentInfo()).config(**config).evaluate(log)
-   result.filter_fin().plot_learners()
+   result.filter_fin(4000).plot_learners()

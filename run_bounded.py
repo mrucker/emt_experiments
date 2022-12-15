@@ -10,10 +10,10 @@ if __name__ == '__main__':
     #the learners we wish to test
     learners = [
         cb.VowpalEpsilonLearner(epsilon, features=["a","xa","xxa"]),
-        StackedLearner         (epsilon, EMT(bound=1000 , scorer=3, router=2, split=100,  interactions=['xa']), "xxa", False, True),
-        StackedLearner         (epsilon, EMT(bound=2000 , scorer=3, router=2, split=100,  interactions=['xa']), "xxa", False, True),
-        StackedLearner         (epsilon, EMT(bound=16000, scorer=3, router=2, split=100,  interactions=['xa']), "xxa", False, True),
-        StackedLearner         (epsilon, EMT(bound=32000, scorer=3, router=2, split=100,  interactions=['xa']), "xxa", False, True),
+        StackedLearner         (epsilon, EMT(bound=1000 , scorer="self_consistent_rank", router="eigen", split=100,  interactions=['xa']), "xxa", False, True),
+        StackedLearner         (epsilon, EMT(bound=2000 , scorer="self_consistent_rank", router="eigen", split=100,  interactions=['xa']), "xxa", False, True),
+        StackedLearner         (epsilon, EMT(bound=16000, scorer="self_consistent_rank", router="eigen", split=100,  interactions=['xa']), "xxa", False, True),
+        StackedLearner         (epsilon, EMT(bound=32000, scorer="self_consistent_rank", router="eigen", split=100,  interactions=['xa']), "xxa", False, True),
     ]
 
     description = "Experiments with bounded memory on EMT."
@@ -26,4 +26,4 @@ if __name__ == '__main__':
     environments = sorted(environments, key=lambda e: (e.params['shuffle'],e.params['openml_task']))
 
     result = cb.Experiment(environments, learners, description=description).config(**config).evaluate(log)
-    result.filter_fin().plot_learners(y='reward')
+    result.filter_fin(32000).plot_learners(y='reward')
