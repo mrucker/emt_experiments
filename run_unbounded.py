@@ -4,7 +4,7 @@ import coba as cb
 import coba.experiments as cbe
 
 n_shuffle = 50 # for faster results reduce this to 1
-config    = {"processes": 8}
+config    = {"processes": 2}
 epsilon   = 0.1
 
 if __name__ == '__main__':
@@ -32,15 +32,13 @@ if __name__ == '__main__':
    ]
 
    description = "Experiments with bounded memory on EMT."
-   log         = "./outcomes/bounded.log.gz"
+   log         = "./outcomes/unbounded.log.gz"
 
    environments = cb.Environments.cache_dir('.coba_cache').from_template("./experiments/unbounded.json", n_shuffle=n_shuffle)
 
    # We sort so that the results written to bounded.log.gz are in a more desirable 
    # order for plotting. This has no effect on the actual results of the experiments.
    environments = sorted(environments, key=lambda e: (e.params['shuffle'],e.params['openml_task']))
-
-   print(sorted(environments, key=lambda e: (e.params['shuffle'],e.params['openml_task']))[145].params)
 
    result = cb.Experiment(environments, learners, description=description, environment_task=cbe.ClassEnvironmentInfo()).config(**config).evaluate(log)
    result.filter_fin(4000).plot_learners()
