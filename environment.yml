@@ -3,8 +3,6 @@ dependencies:
     - python
     - pip
     - pip:
-        - sklearn
-        - pandas
         - matplotlib
-        - vowpalwabbit==9.6.*
-        - coba==6.*
+        - vowpalwabbit==9.7.*
+        - coba==6.1.*

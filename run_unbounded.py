@@ -3,7 +3,7 @@ from learners import EMT, CMT, EpisodicLearner, StackedLearner
 import coba as cb
 import coba.experiments as cbe
 
-n_shuffle = 50 # for faster results reduce this to 1
+n_shuffle = 1 #To reproduce the EMT paper results set this to 50
 config    = {"processes": 2}
 epsilon   = 0.1
 

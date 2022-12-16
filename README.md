@@ -13,10 +13,14 @@ EMTs were developed to possess three qualities:
 
 This repository contains 206 experiments evaluating EMT performance on online contextual bandit problems.
 
-There are two experimental settings that are evaluated:
-1. Unbounded -- the tree keeps all the memories it is given (run_unbounded.py)
-2. Bounded -- the tree must begin pruning memories once it reaches its bound (run_bounded.py)
+There are two experiments provided for EMT:
+1. Unbounded -- the tree keeps all the memories it is given (`python run_unbounded.py`)
+2. Bounded -- the tree must begin pruning memories once it reaches its bound (`python run_bounded.py`)
 
 # Results
 
 After running the experiments the results can be visualized using `/notebooks/plots.ipynb`
+
+# Dependencies
+
+An `environment.yml` file is provided to create a conda environment for the experiments.
