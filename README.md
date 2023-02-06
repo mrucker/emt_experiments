@@ -6,7 +6,7 @@ Eigen memory trees (EMT) [[1](https://arxiv.org/abs/2210.14077)] are iterative m
 
 EMTs were developed to possess three qualities:
 1. iterative growth (i.e., the tree's memory bank grows one memory at a time)
-2. iterative learning (i.e., the tree's search function improves over time)
+2. iterative learning (i.e., the tree's search function improves one example at a time)
 3. sublinear complexity (i.e., the tree's insertion and query complexity is O(log n))
 
 # Experiments
