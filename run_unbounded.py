@@ -12,7 +12,7 @@ if __name__ == '__main__':
    #all of the below hyperparameters were tuned for optimal performance
 
    learners = [
-      # #Parametric
+      #Parametric
       cb.VowpalEpsilonLearner(epsilon, features=["a","xa","xxa"]),
 
       # #EMT-CB (self-consistent)
@@ -36,9 +36,5 @@ if __name__ == '__main__':
 
    environments = cb.Environments.cache_dir('.coba_cache').from_template("./experiments/unbounded.json", n_shuffle=n_shuffle)
 
-   # We sort so that the results written to bounded.log.gz are in a more desirable 
-   # order for plotting. This has no effect on the actual results of the experiments.
-   environments = sorted(environments, key=lambda e: (e.params['shuffle'],e.params['openml_task']))
-
-   result = cb.Experiment(environments, learners, description=description, environment_task=cbe.ClassEnvironmentInfo()).config(**config).evaluate(log)
+   result = cb.Experiment(environments, learners, description=description, environment_task=cbe.ClassEnvironmentInfo()).config(**config).run(log)
    result.filter_fin(4000).plot_learners()

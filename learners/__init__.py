@@ -1,6 +1,7 @@
 import time
 from typing import Hashable, Sequence, Mapping, Any
 
+from coba.learners.primitives import requires_hashables
 from coba.learners import VowpalMediator
 
 logn = 500
@@ -13,6 +14,7 @@ class MemoryKey:
 
         self.x = context
         self.a = action
+
 
         self._hash = hash((context,action))
 
@@ -40,7 +42,7 @@ class EMT:
             "--noconstant",
             f"--power_t {0}",
             "--loss_function squared",
-            f"-b {26}",
+            f"-b {24}",
             "--initial_weight 0",
             *[ f"--interactions {i}" for i in interactions ],
             "--quiet"
@@ -81,7 +83,7 @@ class CMT:
             f"--dream_repeats {dream_repeats}",
             f"--alpha {alpha}",
             f"--power_t {0}",
-            f"-b {25}",
+            f"-b {24}",
             "--quiet",
             *[ f"--interactions {i}" for i in interactions ]
         ]
@@ -109,6 +111,7 @@ class CMT:
     def learn(self, key: MemoryKey, value: MemVal, weight: float):
         self._vw.learn(self._vw.make_example({'x': key.x, 'a': key.a}, f"{value} {weight}"))
 
+@requires_hashables
 class EpisodicLearner:
 
     def __init__(self, epsilon: float, cmt: EMT) -> None:
@@ -135,7 +138,7 @@ class EpisodicLearner:
 
         predict_start = time.time()
 
-        rewards = [ self._cmt.predict(MemoryKey(context, a)) for a in actions]
+        rewards = [self._cmt.predict(MemoryKey(context, a)) for a in actions]
 
         greedy_r = -float('inf')
         greedy_A = []
@@ -162,13 +165,13 @@ class EpisodicLearner:
         """Learn about the result of an action that was taken in a context."""
 
         n_actions  = len(actions)
-        action     = actions[action]
         memory_key = MemoryKey(context, action)
 
         learn_start = time.time()
         self._cmt.learn(key=memory_key, value=reward, weight=1/(n_actions*probability))
         self._times[1] += time.time()-learn_start
 
+@requires_hashables
 class StackedLearner:
 
     def __init__(self, epsilon: float, emt: EMT, X:str, coin:bool, constant:bool) -> None:
@@ -218,7 +221,6 @@ class StackedLearner:
         """Learn about the result of an action that was taken in a context."""
 
         n_actions = len(actions)
-        action    = actions[action]
 
         self._emt.learn(key=MemoryKey(context, action), value=reward, weight=1/(n_actions*probability))
         labels = self._labels(actions, action, reward, probability)
