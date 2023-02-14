@@ -1,10 +1,5 @@
 # Eigen Memory Trees
-
-Eigen memory trees (EMT) [[1](https://arxiv.org/abs/2210.14077)] are memory models which:
-+ Grow iteratively (one example at a time)
-+ Learn iteratively (one example at a time)
-+ Simultaneously use supervised and unsupervised learning
-+ Have logarithmic computation complexity with respect to memory size
+The eigen memory trees (EMT) paper can be found at [[1](https://arxiv.org/abs/2210.14077)].
 
 # Motivation
 
