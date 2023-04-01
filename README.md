@@ -1,6 +1,5 @@
 # Eigen Memory Trees
-
-Eigen memory trees (EMT) [[1](https://arxiv.org/abs/2210.14077)] are iterative memory models that learn using both supervised and unsupervised information.
+The eigen memory trees (EMT) paper can be found at [[1](https://arxiv.org/abs/2210.14077)].
 
 # Motivation
 
@@ -11,7 +10,7 @@ EMTs were developed to possess three qualities:
 
 # Experiments
 
-This repository contains 206 experiments evaluating EMT performance on online contextual bandit problems.
+This repository contains two experiments using 206 datasets to evaluate EMT on contextual bandit problems.
 
 There are two experiments provided for EMT:
 1. Unbounded -- the tree keeps all the memories it is given (`python run_unbounded.py`)
