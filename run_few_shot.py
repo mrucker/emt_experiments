@@ -53,16 +53,11 @@ class NShot:
 
 if __name__ == "__main__":
 
-    n_processes = 8
+    n_processes = 1
     n_shuffle   = 10
     log         = 'few_shot.log.gz' 
 
-    #datasets for these experiments can be found at http://kalman.ml.cmu.edu/wen_datasets/
-    #the experiment assumes all data sets are stored in a ./data/ directory.
-
-    #you should also make a ./caches/ and ./models/ directory for outputs from this experiment
-
-    env = cb.Environments.from_supervised(cb.LibSvmSource("./data/aloi")).filter([NShot(100,i) for i in range(n_shuffle)])
+    env = cb.Environments.cache_dir('.coba_cache').from_openml(42396).filter([NShot(100,i) for i in range(n_shuffle)])
 
     learners = [
         VWC("--oaa {} --quiet"),
@@ -72,8 +67,13 @@ if __name__ == "__main__":
         CMT(100,50,.4 ,max_nodes=9000,learn_at_leaf=False),
     ]
 
+    #this should work out of the box
     cb.Experiment(env,learners,evaluation_task=evaluator).run(log,processes=n_processes)
 
+    #for the rest of this file:
+    #   datasets for these experiments can be found at http://kalman.ml.cmu.edu/wen_datasets/
+    #   the experiment assumes all data sets are stored in a ./data/ directory.
+    #   you should also make a ./caches/ and ./models/ directory for outputs from this experiment
     datasets = {
         "aloi":{"train":"aloi_train.vw"                    , "test": "aloi_test.vw"                    , "classes":1_000 },
         "par1":{"train":"paradata10000_one_shot.vw.train"  , "test": "paradata10000_one_shot.vw.test"  , "classes":10_000},
