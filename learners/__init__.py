@@ -1,27 +1,26 @@
-import time
 from math import log2
 from itertools import count, chain
-from typing import Hashable, Sequence, Mapping, Literal, Any
+from typing import Hashable, Sequence, Mapping, Any
 
 from coba.random import CobaRandom
 from coba.learners import VowpalMediator
 
-logn = 500
 MemVal = Any
 
 class VWC:
 
-    def __init__(self, args:str) -> None:
+    def __init__(self, args:str, weight:bool) -> None:
         self._vw_args = args
         self._vw = VowpalMediator()
         self._rng = CobaRandom(1)
+        self._weight = weight
 
     @property
     def params(self) -> Mapping[str,Any]:
-        return {'args': self._vw_args}
+        return {'args': self._vw_args, 'w':self._weight}
 
     def __reduce__(self):
-        return (VWC, (self._vw_args))
+        return (VWC, (self._vw_args,self._weight))
 
     def set_params(self,actions):
         if not self._vw.is_initialized:
@@ -34,13 +33,13 @@ class VWC:
         return self._map[pr] if pr != 0 else self._rng.choice(self._act)
 
     def learn(self, features: Mapping, value: Any, weight: float):
-        self._vw.learn(self._vw.make_example(features, f"{self._map[value]} {weight}"))
+        self._vw.learn(self._vw.make_example(features, f"{self._map[value]} {weight if self._weight else 1}"))
 
 class EMT(VWC):
 
-    def __init__(self, split:int = 100, scorer:str="self_consistent_rank", router:str="eigen", bound:int=0, interactions: Sequence[str]=[], rng : int = 1337) -> None:
+    def __init__(self, split:int = 100, scorer:str="self_consistent_rank", router:str="eigen", bound:int=0, interactions: Sequence[str]=[], weight:bool = False, rng : int = 1337) -> None:
 
-        self._args = (split, scorer, router, bound, interactions, rng)
+        self._args = (split, scorer, router, bound, interactions, weight, rng)
 
         vw_args = [
             "--emt",
@@ -58,21 +57,21 @@ class EMT(VWC):
             "--quiet"
         ]
 
-        super().__init__(f"{' '.join(vw_args)} --quiet --random_seed {rng}")
+        super().__init__(f"{' '.join(vw_args)} --quiet --random_seed {rng}", weight)
 
     def __reduce__(self):
         return (EMT, self._args)
 
     @property
     def params(self) -> Mapping[str,Any]:
-        keys = ['split', 'scorer', 'router', 'bound', 'X']
+        keys = ['split', 'scorer', 'router', 'bound', 'X', 'w']
         return { 'type':'EMT', **dict(zip(keys,self._args))}
 
 class CMT(VWC):
 
-    def __init__(self, mems_per_leaf:int=100, dream_repeats:int=5, alpha:float=0.5, lr:int=.001, coin:bool = True, interactions: Sequence[str]=[], max_nodes:int=100, learn_at_leaf:bool=True, rng : int = 1337) -> None:
+    def __init__(self, mems_per_leaf:int=100, dream_repeats:int=5, alpha:float=0.5, lr:int=.001, coin:bool = True, interactions: Sequence[str]=[], max_nodes:int=100, learn_at_leaf:bool=True, weight:bool = False, rng : int = 1337) -> None:
 
-        self._init_args = (mems_per_leaf, dream_repeats, alpha, lr, coin, interactions, max_nodes, learn_at_leaf, rng)
+        self._init_args = (mems_per_leaf, dream_repeats, alpha, lr, coin, interactions, max_nodes, learn_at_leaf, weight, rng)
 
         #leaf splits when 
             # n_leaf_examples >= leaf_example_multiplier*log2(tree->max_nodes)
@@ -89,13 +88,13 @@ class CMT(VWC):
             f"--dream_repeats {dream_repeats}",
             f"--alpha {alpha}",
             f"--power_t {0}",
-            f"-b {29}",
+            f"-b {26}",
             "--quiet",
             *[ f"--interactions {i}" for i in interactions ]
         ]
 
         if coin: vw_args.append("--coin")
-        super().__init__(f"{' '.join(vw_args)} --quiet --random_seed {rng}")
+        super().__init__(f"{' '.join(vw_args)} --quiet --random_seed {rng}", weight)
 
     def __reduce__(self):
         return (CMT, self._init_args)
@@ -114,7 +113,6 @@ class EpisodicLearner:
         self._epsilon = epsilon
         self._i       = 0
         self._mem     = mem
-        self._times   = [0, 0]
 
     @property
     def params(self) -> Mapping[str,Any]:
@@ -127,12 +125,6 @@ class EpisodicLearner:
             self._mem.set_params(['0','1'])
 
         self._i += 1
-
-        if logn and self._i % logn == 0:
-            print(f"MEM {self._i}. avg prediction time {round(self._times[0]/self._i,2)}")
-            print(f"MEM {self._i}. avg learn      time {round(self._times[1]/self._i,2)}")
-
-        predict_start = time.time()
 
         rewards = [int(self._mem.predict({'x':context,'a':a})) for a in actions]
 
@@ -150,19 +142,14 @@ class EpisodicLearner:
                 greedy_r = mem_value
                 greedy_A = [action]
 
-        self._times[0] += time.time()-predict_start
-
         min_p = self._epsilon / len(actions)
         grd_p = (1-self._epsilon)/len(greedy_A)
 
-        return [ grd_p+min_p if a in greedy_A else min_p for a in actions ]
+        return [ grd_p+min_p if a in greedy_A else min_p for a in actions ], {'actions': actions}
 
-    def learn(self, context: Hashable, actions: Sequence[Hashable], action: Hashable, reward: float, probability: float) -> None:
+    def learn(self, context: Hashable, action: Hashable, reward: float, probability: float, actions: Sequence[Hashable]) -> None:
         """Learn about the result of an action that was taken in a context."""
-
-        learn_start = time.time()
         self._mem.learn({'x':context,'a':action}, str(reward), weight=1./(len(actions)*probability))
-        self._times[1] += time.time()-learn_start
 
 class StackedLearner:
 
@@ -173,7 +160,6 @@ class StackedLearner:
         self._epsilon = epsilon
         self._i       = 0
         self._mem     = mem
-        self._times   = [0, 0]
         self._args    = (X, coin, constant)
 
         if X == 'xa':
@@ -202,20 +188,16 @@ class StackedLearner:
 
         self._i += 1
 
-        if logn and self._i % logn == 0:
-           print(f"MEM {self._i}. avg prediction time {round(self._times[0]/self._i,2)}")
-           print(f"MEM {self._i}. avg learn      time {round(self._times[1]/self._i,2)}")
-
         memories = [ int(self._mem.predict({'x':context,'a':a})) for a in actions ]
         adfs     = [ {'a':a, 'm':m }  for a,m in zip(actions,memories) ]
         probs    = self._vw.predict(self._vw.make_examples({'x':context}, adfs, None))
 
-        return probs, {'adfs':adfs}
+        return probs, {'adfs':adfs, 'actions':actions}
 
-    def learn(self, context: Hashable, actions: Sequence[Hashable], action: Hashable, reward: float, probability: float, adfs: Any) -> None:
+    def learn(self, context: Hashable, action: Hashable, reward: float, probability: float, adfs: Any, actions: Sequence[Hashable]) -> None:
         """Learn about the result of an action that was taken in a context."""
 
-        self._mem.learn({'x':context,'a':action}, str(reward), weight=1/(len(actions)*probability))
+        self._mem.learn({'x':context,'a':action}, str(reward), weight=1./(len(actions)*probability))
         labels = self._labels(actions, action, reward, probability)
         self._vw.learn(self._vw.make_examples({'x':context}, adfs, labels))
 

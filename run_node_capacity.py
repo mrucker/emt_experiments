@@ -3,8 +3,10 @@ from learners import EMT, EpisodicLearner
 import coba as cb
 
 n_shuffle = 1 #To reproduce the EMT paper set this to 2
-config    = {"processes": 7 }
+processes = 14
 epsilon   = 0.1
+
+cb.OnPolicyEvaluator
 
 if __name__ == '__main__':
 
@@ -19,7 +21,7 @@ if __name__ == '__main__':
    description = "Experiments with varying levels of c."
    log         = "./outcomes/node_capacity.log.gz"
 
-   environments = cb.Environments.cache_dir('.coba_cache').from_template("./experiments/unbounded.json", n_shuffle=n_shuffle).where(n_interactions=4000)
+   environments = cb.Environments.from_template("./experiments/class190.json", n_shuffle=n_shuffle, strict=True)
 
-   result = cb.Experiment(environments, learners, description=description, evaluation_task=cb.OnPolicyEvaluation(['reward','time'])).config(**config).run(log)
-   result.filter_fin(4000).plot_learners()
+   result = cb.Experiment(environments, learners, cb.OnPolicyEvaluator(['reward','time'], description=description,)).run(log,processes=processes)
+   result.plot_learners()

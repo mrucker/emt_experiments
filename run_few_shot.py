@@ -57,7 +57,7 @@ if __name__ == "__main__":
     n_shuffle   = 10
     log         = 'few_shot.log.gz' 
 
-    env = cb.Environments.cache_dir('.coba_cache').from_openml(42396).filter([NShot(100,i) for i in range(n_shuffle)])
+    env = cb.Environments.from_openml(42396).filter([NShot(100,i) for i in range(n_shuffle)])
 
     learners = [
         VWC("--oaa {} --quiet"),
