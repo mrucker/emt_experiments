@@ -68,7 +68,7 @@ if __name__ == "__main__":
     ]
 
     #this should work out of the box
-    cb.Experiment(env,learners,evaluation_task=evaluator).run(log,processes=n_processes)
+    cb.Experiment(env,learners,evaluator).run(log,processes=n_processes)
 
     #for the rest of this file:
     #   datasets for these experiments can be found at http://kalman.ml.cmu.edu/wen_datasets/

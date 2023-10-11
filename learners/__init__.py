@@ -54,7 +54,6 @@ class EMT(VWC):
             f"-b {26}",
             "--initial_weight 0",
             *[ f"--interactions {i}" for i in interactions ],
-            "--quiet"
         ]
 
         super().__init__(f"{' '.join(vw_args)} --quiet --random_seed {rng}", weight)
@@ -89,7 +88,6 @@ class CMT(VWC):
             f"--alpha {alpha}",
             f"--power_t {0}",
             f"-b {26}",
-            "--quiet",
             *[ f"--interactions {i}" for i in interactions ]
         ]
 
