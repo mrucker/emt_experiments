@@ -29,7 +29,7 @@ if __name__ == '__main__':
    ]
 
    description = "Experiments with unbounded memory on EMT."
-   log         = "./outcomes/unbounded4.log.gz"
-   env         = cb.Environments.from_template("./experiments/new.json", n_shuffle=n_shuffle).scale(0,'minmax')
-   
+   log         = "./results/unbounded.log.gz"
+   env         = cb.Environments.from_template("./environments/feurer.json", n_shuffle=n_shuffle)
+
    cb.Experiment(env, learners, description=description).run(log,processes=processes)

@@ -1,4 +1,11 @@
 {
+    "description":[
+        "This experiment was created using 234 environments from https://arxiv.org/abs/2007.04074.",
+        "We excluded 12 tasks from the original benchmark due to too few examples.",
+        [232, 3044, 75105, 75212, 146575, 146578, 146600, 146601, 146602, 166875, 166953, 211723],
+        "We excluded one task from the original experiment because the Openml RestAPI breaks.",
+        [189866]
+    ],
     "variables": {
         "$n_shuffle": 20,
         "$n_take"   : 4000,
@@ -8,10 +15,11 @@
         "$openmls"  : { "OpenmlSimulation": {"task_id":"$"        }, "for": "$task_ids"            },
         "$reservoir": { "Reservoir"       : ["$n_take", "$strict" ]                                },
         "$repr"     : { "Repr"            : ["string", "string"   ]                                },
+        "$scale"    : { "Scale"           : [0,"minmax"           ]                                },
         "$shuffle"  : { "Shuffle"         : ["$"                  ], "for": {"range":"$n_shuffle"} }
     },
-    
+
     "environments": [
-        ["$openmls",  "$reservoir", "$repr", "$shuffle"]
+        ["$openmls",  "$reservoir", "$repr", "$scale", "$shuffle"]
     ]
 }
