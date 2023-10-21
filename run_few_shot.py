@@ -93,43 +93,43 @@ if __name__ == "__main__":
         ['aloi_lom', datasets['aloi'], 3, '--log_multi 1000', '--testonly'],
         ['aloi_rt' , datasets['aloi'], 3, '--recall_tree 1000', '--testonly'],
 
-        ['par1_emt', datasets['par1'], 2, '--emt --emt_leaf 200 --noconstant', '--testonly'],
+        ['par1_emt', datasets['par1'], 2, '--emt --emt_leaf 1000 --noconstant --emt_scorer not_self_consistent_rank', '--testonly'],
         ['par1_cmt', datasets['par1'], 2, '--memory_tree 752 -l 0.1 --max_number_of_labels 10000 --leaf_example_multiplier 4 --dream_repeats 5 --dream_at_update 1 --alpha 0.1', ''],
         ['par1_oaa', datasets['par1'], 2, '--oaa 10000', '--testonly'],
         ['par1_lom', datasets['par1'], 2, '--log_multi 10000', '--testonly'],
         ['par1_rt' , datasets['par1'], 2, '--recall_tree 10000', '--testonly'],
 
-        ['par2_emt', datasets['par2'], 2, '--emt --emt_leaf 200 --noconstant', '--testonly'],
+        ['par2_emt', datasets['par2'], 2, '--emt --emt_leaf 1000 --noconstant --emt_scorer not_self_consistent_rank', '--testonly'],
         ['par2_cmt', datasets['par2'], 2, '--memory_tree 1399 -l 0.1 --max_number_of_labels 10000 --leaf_example_multiplier 4 --dream_repeats 5 --dream_at_update 1 --alpha 0.1', ''],
         ['par2_oaa', datasets['par2'], 2, '--oaa 10000', '--testonly'],
         ['par2_lom', datasets['par2'], 2, '--log_multi 10000', '--testonly'],
         ['par2_rt' , datasets['par2'], 2, '--recall_tree 10000', '--testonly'],
 
-        ['par3_emt', datasets['par3'], 2, '--emt --emt_leaf 200 --noconstant', '--testonly'],
+        ['par3_emt', datasets['par3'], 2, '--emt --emt_leaf 1000 --noconstant --emt_scorer not_self_consistent_rank', '--testonly'],
         ['par3_cmt', datasets['par3'], 2, '--memory_tree 2017 -l 0.1 --max_number_of_labels 10000 --leaf_example_multiplier 4 --dream_repeats 5 --dream_at_update 1 --alpha 0.1', ''],
         ['par3_oaa', datasets['par3'], 2, '--oaa 10000', '--testonly'],
         ['par3_lom', datasets['par3'], 2, '--log_multi 10000', '--testonly'],
         ['par3_rt' , datasets['par3'], 2, '--recall_tree 10000', '--testonly'],
- 
-        ['img1_emt', datasets['img1'], 2, '--emt --emt_leaf 200 --noconstant', '--testonly'],
+
+        ['img1_emt', datasets['img1'], 2, '--emt --emt_leaf 500 --noconstant --coin', '--testonly'],
         ['img1_cmt', datasets['img1'], 2, '--memory_tree 1513 -l 0.01 --max_number_of_labels 21850 --leaf_example_multiplier 4 --dream_repeats 3 --dream_at_update 1 --alpha 0.1', ''],
         ['img1_oaa', datasets['img1'], 2, '--oaa 21850', '--testonly'],
         ['img1_lom', datasets['img1'], 2, '--log_multi 21850', '--testonly'],
         ['img1_rt' , datasets['img1'], 2, '--recall_tree 21850', '--testonly'],
 
-        ['img2_emt', datasets['img2'], 2, '--emt --emt_leaf 200 --noconstant', '--testonly'],
+        ['img2_emt', datasets['img2'], 2, '--emt --emt_leaf 500 --noconstant --coin', '--testonly'],
         ['img2_cmt', datasets['img2'], 2, '--memory_tree 2829 -l 0.01 --max_number_of_labels 21850 --leaf_example_multiplier 4 --dream_repeats 3 --dream_at_update 1 --alpha 0.1', ''],
         ['img2_oaa', datasets['img2'], 2, '--oaa 21850', '--testonly'],
         ['img2_lom', datasets['img2'], 2, '--log_multi 21850', '--testonly'],
         ['img2_rt' , datasets['img2'], 2, '--recall_tree 21850', '--testonly'],
 
-        ['img3_emt', datasets['img3'], 2, '--emt --emt_leaf 200 --noconstant', '--testonly'],
+        ['img3_emt', datasets['img3'], 2, '--emt --emt_leaf 500 --noconstant --coin', '--testonly'],
         ['img3_cmt', datasets['img3'], 2, '--memory_tree 4089 -l 0.01 --max_number_of_labels 21850 --leaf_example_multiplier 4 --dream_repeats 3 --dream_at_update 1 --alpha 0.1', ''],
         ['img3_oaa', datasets['img3'], 2, '--oaa 21850', '--testonly'],
         ['img3_lom', datasets['img3'], 2, '--log_multi 21850', '--testonly'],
         ['img3_rt' , datasets['img3'], 2, '--recall_tree 21850', '--testonly'],
 
-        ['img5_emt', datasets['img5'], 2, '--emt --emt_leaf 200 --noconstant', '--testonly'],
+        ['img5_emt', datasets['img5'], 2, '--emt --emt_leaf 500 --noconstant --coin', '--testonly'],
         ['img5_cmt', datasets['img5'], 2, '--memory_tree 6515 -l 0.01 --max_number_of_labels 21850 --leaf_example_multiplier 4 --dream_repeats 3 --dream_at_update 1 --alpha 0.1', ''],
         ['img5_oaa', datasets['img5'], 2, '--oaa 21850', '--testonly'],
         ['img5_lom', datasets['img5'], 2, '--log_multi 21850', '--testonly'],
@@ -195,7 +195,7 @@ if __name__ == "__main__":
                     passes = item.pop(2)
                     args   = item.pop(2)
                     print(f"Started Training {model}")
-                    cmd    = f'vw ./data/{train} -f ./models/{model} {args} -b 29 --random_seed 1337 --holdout_off --passes {passes} --cache --cache_file ./caches/{model}.cache --quiet'                
+                    cmd    = f'vw ./data/{train} -f ./models/{model} {args} -b 29 --random_seed 1337 --holdout_off --passes {passes} --cache --cache_file ./caches/{model}.cache --quiet'
 
                 elif is_testing(item):
                     model = item[0]

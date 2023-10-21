@@ -9,7 +9,7 @@ MemVal = Any
 
 class VWC:
 
-    def __init__(self, args:str, weight:bool) -> None:
+    def __init__(self, args:str, weight:bool=False) -> None:
         self._vw_args = args
         self._vw = VowpalMediator()
         self._rng = CobaRandom(1)
